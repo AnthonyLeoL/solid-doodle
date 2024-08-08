@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import WorldMap from "react-svg-worldmap";
-
+import ZoomedMap from "./Zoomed";
 import "./App.css";
 
 const CSV_URL = "/questions.csv";
@@ -10,19 +10,17 @@ const App = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [mapData, setMapData] = useState([]);
-  console.log("🚀 ~ App ~ mapData:", mapData);
+
+  const countryCode = questions[currentQuestionIndex]?.country.trim();
 
   useEffect(() => {
     fetch(CSV_URL)
       .then((response) => response.text())
       .then((text) => {
-        const parsedQuestions = text
-          .split("\n")
-          .slice(1)
-          .map((line) => {
-            const [question, answer, country] = line.split(",");
-            return { question, answer, country };
-          });
+        const parsedQuestions = text.split("\n").map((line) => {
+          const [question, answer, country] = line.split(",");
+          return { question, answer, country };
+        });
         setQuestions(parsedQuestions);
       });
   }, []);
@@ -60,6 +58,9 @@ const App = () => {
         />
       </div>
       <div className="quiz-container">
+        <div className="zoomed-map-container">
+          <ZoomedMap show={showAnswer} countryCode={countryCode} />
+        </div>
         <div className="quiz-card">
           <h2 className="quiz-title">{currentQuestion?.question}</h2>
           {showAnswer && (
